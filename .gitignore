@@ -1,0 +1,38 @@
+# Compiled C files
+*.o
+*.obj
+*.out
+*.exe
+
+# Project executable
+triage
+triage.exe
+
+# Build directory
+build/
+
+# Debug files
+*.log
+core
+core.*
+
+# VS Code / IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# Python files - only relevant if optional GUI is added later
+__pycache__/
+*.pyc
+.venv/
+venv/
