@@ -1,42 +1,39 @@
 #include <stdio.h>
 #include "models.h"
+#include "../include/io.h"
 
 int main(void) {
-    Issue sample_issue = {
-        101,
-        "Login page crashes",
-        10,
-        4,
-        "Backend",
-        -1
-    };
+    Issue issues[MAX_ISSUES];
+    Developer developers[MAX_DEVELOPERS];
 
-    Developer sample_developer = {
-        1,
-        "Aman",
-        "Backend",
-        8
-    };
+    int issue_count = load_issues(
+        "data/issues_small.csv",
+        issues,
+        MAX_ISSUES
+    );
 
-    if (!is_valid_issue(&sample_issue)) {
-        printf("Invalid issue data.\n");
+    int developer_count = load_developers(
+        "data/developers_small.csv",
+        developers,
+        MAX_DEVELOPERS
+    );
+
+    if (issue_count < 0) {
+        printf("Error: Could not load issue data.\n");
         return 1;
     }
 
-    if (!is_valid_developer(&sample_developer)) {
-        printf("Invalid developer data.\n");
+    if (developer_count < 0) {
+        printf("Error: Could not load developer data.\n");
         return 1;
     }
 
-    printf("=== Sample Issue ===\n");
-    print_issue(&sample_issue);
-
-    printf("\n=== Sample Developer ===\n");
-    print_developer(&sample_developer);
-
-    printf("\n============================================\n");
+    printf("============================================\n");
     printf(" OPEN SOURCE ISSUE TRIAGE & ASSIGNMENT TOOL\n");
     printf("============================================\n");
+
+    printf("Loaded %d issues successfully.\n", issue_count);
+    printf("Loaded %d developers successfully.\n\n", developer_count);
 
     printf("1. View Issues\n");
     printf("2. View Developers\n");

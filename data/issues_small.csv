@@ -1,0 +1,16 @@
+id,title,priority,estimated_hours,required_skill,dependency_id
+101,Login page crashes,10,4,Backend,-1
+102,Navbar alignment issue,4,2,Frontend,-1
+103,Database timeout,9,6,Database,-1
+104,Authentication API error,8,5,Backend,103
+105,Dark mode support,3,8,Frontend,-1
+106,Search results not loading,7,4,Backend,103
+107,Mobile layout overflow,5,3,Frontend,102
+108,Slow database query,8,7,Database,-1
+109,Password reset failure,9,4,Backend,104
+110,Update installation guide,2,2,Documentation,-1
+111,Profile image upload error,6,3,Backend,-1
+112,Improve dashboard layout,4,5,Frontend,102
+113,Database backup failure,10,6,Database,-1
+114,API response delay,7,5,Backend,103
+115,Update API documentation,3,2,Documentation,104
