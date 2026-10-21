@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -std=c11 -Wall -Wextra -pedantic -Iinclude
 
 TARGET = triage
-SOURCES = src/main.c src/models.c src/io.c
+SOURCES = src/main.c src/models.c src/io.c src/sorting.c
 
 $(TARGET): $(SOURCES)
 	$(CC) $(CFLAGS) $(SOURCES) -o $(TARGET)

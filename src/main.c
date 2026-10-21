@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "models.h"
 #include "../include/io.h"
+#include "../include/sorting.h"
 
 int main(void) {
     Issue issues[MAX_ISSUES];
@@ -46,5 +47,44 @@ int main(void) {
     printf("9. Benchmarks & Comparisons\n");
     printf("0. Exit\n");
 
+    int choice;
+
+    printf("\nEnter your choice: ");
+
+    if (scanf("%d", &choice) != 1) {
+        printf("Invalid input.\n");
+        return 1;
+    }
+    if (choice == 3) {
+    int sort_choice;
+
+    printf("\nChoose sorting algorithm:\n");
+    printf("1. Merge Sort\n");
+    printf("2. Quick Sort\n");
+    printf("Enter your choice: ");
+
+    if (scanf("%d", &sort_choice) != 1) {
+        printf("Invalid input.\n");
+        return 1;
+    }
+
+    if (sort_choice == 1) {
+        merge_sort_issues(issues, issue_count);
+        printf("\nIssues prioritized using Merge Sort:\n");
+    } else if (sort_choice == 2) {
+        quick_sort_issues(issues, issue_count);
+        printf("\nIssues prioritized using Quick Sort:\n");
+    } else {
+        printf("Invalid sorting choice.\n");
+        return 1;
+    }
+
+    for (int i = 0; i < issue_count; i++) {
+        printf("ID: %d | Priority: %d | %s\n",
+               issues[i].id,
+               issues[i].priority,
+               issues[i].title);
+    }
+}
     return 0;
 }
