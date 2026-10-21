@@ -2,6 +2,7 @@
 #include "models.h"
 #include "../include/io.h"
 #include "../include/sorting.h"
+#include "../include/search.h"
 
 int main(void) {
     Issue issues[MAX_ISSUES];
@@ -84,6 +85,44 @@ int main(void) {
                issues[i].id,
                issues[i].priority,
                issues[i].title);
+    }
+}
+else if (choice == 4) {
+    int target_id;
+    int search_choice;
+    int index;
+
+    printf("\nEnter Issue ID to search: ");
+
+    if (scanf("%d", &target_id) != 1) {
+        printf("Invalid input.\n");
+        return 1;
+    }
+
+    printf("\nChoose search algorithm:\n");
+    printf("1. Iterative Binary Search\n");
+    printf("2. Recursive Binary Search\n");
+    printf("Enter your choice: ");
+
+    if (scanf("%d", &search_choice) != 1) {
+        printf("Invalid input.\n");
+        return 1;
+    }
+
+    if (search_choice == 1) {
+        index = binary_search_iterative(issues, issue_count, target_id);
+    } else if (search_choice == 2) {
+        index = binary_search_recursive(issues, issue_count, target_id);
+    } else {
+        printf("Invalid search choice.\n");
+        return 1;
+    }
+
+    if (index == -1) {
+        printf("\nIssue not found.\n");
+    } else {
+        printf("\nIssue Found:\n");
+        print_issue(&issues[index]);
     }
 }
     return 0;
