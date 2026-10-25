@@ -4,6 +4,7 @@
 #include "../include/sorting.h"
 #include "../include/search.h"
 #include "../include/assignment.h"
+#include "../include/dependency.h"
 
 int main(void) {
     Issue issues[MAX_ISSUES];
@@ -160,6 +161,22 @@ else if (choice == 6) {
     printf("\nTotal assigned: %d/%d\n",
            assignment_count,
            issue_count);
+}
+else if (choice == 7) {
+    int issue_id;
+
+    if (!validate_dependencies(issues, issue_count)) {
+        printf("\nWarning: Invalid dependency data detected.\n");
+    }
+
+    printf("\nEnter Issue ID to analyse: ");
+
+    if (scanf("%d", &issue_id) != 1) {
+        printf("Invalid input.\n");
+        return 1;
+    }
+
+    print_dependency_chain(issues, issue_count, issue_id);
 }
     return 0;
 }
