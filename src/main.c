@@ -3,6 +3,7 @@
 #include "../include/io.h"
 #include "../include/sorting.h"
 #include "../include/search.h"
+#include "../include/assignment.h"
 
 int main(void) {
     Issue issues[MAX_ISSUES];
@@ -124,6 +125,41 @@ else if (choice == 4) {
         printf("\nIssue Found:\n");
         print_issue(&issues[index]);
     }
+}
+else if (choice == 6) {
+    Issue prioritized_issues[MAX_ISSUES];
+    Developer available_developers[MAX_DEVELOPERS];
+    Assignment assignments[MAX_ISSUES];
+
+    for (int i = 0; i < issue_count; i++) {
+        prioritized_issues[i] = issues[i];
+    }
+
+    for (int i = 0; i < developer_count; i++) {
+        available_developers[i] = developers[i];
+    }
+
+    merge_sort_issues(prioritized_issues, issue_count);
+
+    int assignment_count = assign_issues(
+        prioritized_issues,
+        issue_count,
+        available_developers,
+        developer_count,
+        assignments
+    );
+
+    printf("\nDeveloper Assignments:\n");
+
+    for (int i = 0; i < assignment_count; i++) {
+        printf("Issue %d -> Developer %d\n",
+               assignments[i].issue_id,
+               assignments[i].developer_id);
+    }
+
+    printf("\nTotal assigned: %d/%d\n",
+           assignment_count,
+           issue_count);
 }
     return 0;
 }
