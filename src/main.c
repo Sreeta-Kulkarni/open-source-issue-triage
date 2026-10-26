@@ -32,151 +32,224 @@ int main(void) {
         return 1;
     }
 
-    printf("============================================\n");
-    printf(" OPEN SOURCE ISSUE TRIAGE & ASSIGNMENT TOOL\n");
-    printf("============================================\n");
-
-    printf("Loaded %d issues successfully.\n", issue_count);
-    printf("Loaded %d developers successfully.\n\n", developer_count);
-
-    printf("1. View Issues\n");
-    printf("2. View Developers\n");
-    printf("3. Prioritize Issues\n");
-    printf("4. Search Issues\n");
-    printf("5. Release Planning\n");
-    printf("6. Developer Assignment\n");
-    printf("7. Dependency Analysis\n");
-    printf("8. DAA Algorithm Workbench\n");
-    printf("9. Benchmarks & Comparisons\n");
-    printf("0. Exit\n");
-
     int choice;
 
-    printf("\nEnter your choice: ");
+    do {
+        printf("\n============================================\n");
+        printf(" OPEN SOURCE ISSUE TRIAGE & ASSIGNMENT TOOL\n");
+        printf("============================================\n");
 
-    if (scanf("%d", &choice) != 1) {
-        printf("Invalid input.\n");
-        return 1;
-    }
-    if (choice == 3) {
-    int sort_choice;
+        printf("Loaded %d issues.\n", issue_count);
+        printf("Loaded %d developers.\n\n", developer_count);
 
-    printf("\nChoose sorting algorithm:\n");
-    printf("1. Merge Sort\n");
-    printf("2. Quick Sort\n");
-    printf("Enter your choice: ");
+        printf("1. View Issues\n");
+        printf("2. View Developers\n");
+        printf("3. Prioritize Issues\n");
+        printf("4. Search Issues\n");
+        printf("5. Release Planning\n");
+        printf("6. Developer Assignment\n");
+        printf("7. Dependency Analysis\n");
+        printf("8. DAA Algorithm Workbench\n");
+        printf("9. Benchmarks & Comparisons\n");
+        printf("0. Exit\n");
 
-    if (scanf("%d", &sort_choice) != 1) {
-        printf("Invalid input.\n");
-        return 1;
-    }
+        printf("\nEnter your choice: ");
 
-    if (sort_choice == 1) {
-        merge_sort_issues(issues, issue_count);
-        printf("\nIssues prioritized using Merge Sort:\n");
-    } else if (sort_choice == 2) {
-        quick_sort_issues(issues, issue_count);
-        printf("\nIssues prioritized using Quick Sort:\n");
-    } else {
-        printf("Invalid sorting choice.\n");
-        return 1;
-    }
+        if (scanf("%d", &choice) != 1) {
+            printf("Invalid input.\n");
+            return 1;
+        }
 
-    for (int i = 0; i < issue_count; i++) {
-        printf("ID: %d | Priority: %d | %s\n",
-               issues[i].id,
-               issues[i].priority,
-               issues[i].title);
-    }
-}
-else if (choice == 4) {
-    int target_id;
-    int search_choice;
-    int index;
+        if (choice == 1) {
+            printf("\nIssues:\n");
 
-    printf("\nEnter Issue ID to search: ");
+            for (int i = 0; i < issue_count; i++) {
+                printf("\n");
+                print_issue(&issues[i]);
+            }
+        }
 
-    if (scanf("%d", &target_id) != 1) {
-        printf("Invalid input.\n");
-        return 1;
-    }
+        else if (choice == 2) {
+            printf("\nDevelopers:\n");
 
-    printf("\nChoose search algorithm:\n");
-    printf("1. Iterative Binary Search\n");
-    printf("2. Recursive Binary Search\n");
-    printf("Enter your choice: ");
+            for (int i = 0; i < developer_count; i++) {
+                printf("\n");
+                print_developer(&developers[i]);
+            }
+        }
 
-    if (scanf("%d", &search_choice) != 1) {
-        printf("Invalid input.\n");
-        return 1;
-    }
+        else if (choice == 3) {
+            int sort_choice;
+            Issue prioritized_issues[MAX_ISSUES];
 
-    if (search_choice == 1) {
-        index = binary_search_iterative(issues, issue_count, target_id);
-    } else if (search_choice == 2) {
-        index = binary_search_recursive(issues, issue_count, target_id);
-    } else {
-        printf("Invalid search choice.\n");
-        return 1;
-    }
+            for (int i = 0; i < issue_count; i++) {
+                prioritized_issues[i] = issues[i];
+            }
 
-    if (index == -1) {
-        printf("\nIssue not found.\n");
-    } else {
-        printf("\nIssue Found:\n");
-        print_issue(&issues[index]);
-    }
-}
-else if (choice == 6) {
-    Issue prioritized_issues[MAX_ISSUES];
-    Developer available_developers[MAX_DEVELOPERS];
-    Assignment assignments[MAX_ISSUES];
+            printf("\nChoose sorting algorithm:\n");
+            printf("1. Merge Sort\n");
+            printf("2. Quick Sort\n");
+            printf("Enter your choice: ");
 
-    for (int i = 0; i < issue_count; i++) {
-        prioritized_issues[i] = issues[i];
-    }
+            if (scanf("%d", &sort_choice) != 1) {
+                printf("Invalid input.\n");
+                return 1;
+            }
 
-    for (int i = 0; i < developer_count; i++) {
-        available_developers[i] = developers[i];
-    }
+            if (sort_choice == 1) {
+                merge_sort_issues(prioritized_issues, issue_count);
+                printf("\nIssues prioritized using Merge Sort:\n");
+            }
 
-    merge_sort_issues(prioritized_issues, issue_count);
+            else if (sort_choice == 2) {
+                quick_sort_issues(prioritized_issues, issue_count);
+                printf("\nIssues prioritized using Quick Sort:\n");
+            }
 
-    int assignment_count = assign_issues(
-        prioritized_issues,
-        issue_count,
-        available_developers,
-        developer_count,
-        assignments
-    );
+            else {
+                printf("Invalid sorting choice.\n");
+                continue;
+            }
 
-    printf("\nDeveloper Assignments:\n");
+            for (int i = 0; i < issue_count; i++) {
+                printf("ID: %d | Priority: %d | %s\n",
+                       prioritized_issues[i].id,
+                       prioritized_issues[i].priority,
+                       prioritized_issues[i].title);
+            }
+        }
 
-    for (int i = 0; i < assignment_count; i++) {
-        printf("Issue %d -> Developer %d\n",
-               assignments[i].issue_id,
-               assignments[i].developer_id);
-    }
+        else if (choice == 4) {
+            int target_id;
+            int search_choice;
+            int index;
 
-    printf("\nTotal assigned: %d/%d\n",
-           assignment_count,
-           issue_count);
-}
-else if (choice == 7) {
-    int issue_id;
+            printf("\nEnter Issue ID to search: ");
 
-    if (!validate_dependencies(issues, issue_count)) {
-        printf("\nWarning: Invalid dependency data detected.\n");
-    }
+            if (scanf("%d", &target_id) != 1) {
+                printf("Invalid input.\n");
+                return 1;
+            }
 
-    printf("\nEnter Issue ID to analyse: ");
+            printf("\nChoose search algorithm:\n");
+            printf("1. Iterative Binary Search\n");
+            printf("2. Recursive Binary Search\n");
+            printf("Enter your choice: ");
 
-    if (scanf("%d", &issue_id) != 1) {
-        printf("Invalid input.\n");
-        return 1;
-    }
+            if (scanf("%d", &search_choice) != 1) {
+                printf("Invalid input.\n");
+                return 1;
+            }
 
-    print_dependency_chain(issues, issue_count, issue_id);
-}
+            if (search_choice == 1) {
+                index = binary_search_iterative(
+                    issues,
+                    issue_count,
+                    target_id
+                );
+            }
+
+            else if (search_choice == 2) {
+                index = binary_search_recursive(
+                    issues,
+                    issue_count,
+                    target_id
+                );
+            }
+
+            else {
+                printf("Invalid search choice.\n");
+                continue;
+            }
+
+            if (index == -1) {
+                printf("\nIssue not found.\n");
+            }
+
+            else {
+                printf("\nIssue Found:\n");
+                print_issue(&issues[index]);
+            }
+        }
+
+        else if (choice == 5) {
+            printf("\nRelease Planning is not implemented yet.\n");
+        }
+
+        else if (choice == 6) {
+            Issue prioritized_issues[MAX_ISSUES];
+            Developer available_developers[MAX_DEVELOPERS];
+            Assignment assignments[MAX_ISSUES];
+
+            for (int i = 0; i < issue_count; i++) {
+                prioritized_issues[i] = issues[i];
+            }
+
+            for (int i = 0; i < developer_count; i++) {
+                available_developers[i] = developers[i];
+            }
+
+            merge_sort_issues(prioritized_issues, issue_count);
+
+            int assignment_count = assign_issues(
+                prioritized_issues,
+                issue_count,
+                available_developers,
+                developer_count,
+                assignments
+            );
+
+            printf("\nDeveloper Assignments:\n");
+
+            for (int i = 0; i < assignment_count; i++) {
+                printf("Issue %d -> Developer %d\n",
+                       assignments[i].issue_id,
+                       assignments[i].developer_id);
+            }
+
+            printf("\nTotal assigned: %d/%d\n",
+                   assignment_count,
+                   issue_count);
+        }
+
+        else if (choice == 7) {
+            int issue_id;
+
+            if (!validate_dependencies(issues, issue_count)) {
+                printf("\nWarning: Invalid dependency data detected.\n");
+            }
+
+            printf("\nEnter Issue ID to analyse: ");
+
+            if (scanf("%d", &issue_id) != 1) {
+                printf("Invalid input.\n");
+                return 1;
+            }
+
+            print_dependency_chain(
+                issues,
+                issue_count,
+                issue_id
+            );
+        }
+
+        else if (choice == 8) {
+            printf("\nDAA Algorithm Workbench will be completed in Phase II.\n");
+        }
+
+        else if (choice == 9) {
+            printf("\nBenchmarking will be completed in a later stage.\n");
+        }
+
+        else if (choice == 0) {
+            printf("\nExiting program.\n");
+        }
+
+        else {
+            printf("\nInvalid menu choice.\n");
+        }
+
+    } while (choice != 0);
+
     return 0;
 }
