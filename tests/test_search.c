@@ -1,31 +1,20 @@
 #include <stdio.h>
 #include "../include/search.h"
 
-static void test_both_searches(
+static void check_result(
     const char *test_name,
-    const Issue issues[],
-    int count,
-    int target_id,
+    int actual,
     int expected
 ) {
-    int iterative_result =
-        binary_search_iterative(issues, count, target_id);
-
-    int recursive_result =
-        binary_search_recursive(issues, count, target_id);
-
-    if (iterative_result == expected &&
-        recursive_result == expected &&
-        iterative_result == recursive_result) {
-
+    if (actual == expected) {
         printf("[PASS] %s\n", test_name);
-
     } else {
-        printf("[FAIL] %s | Expected: %d | Iterative: %d | Recursive: %d\n",
-               test_name,
-               expected,
-               iterative_result,
-               recursive_result);
+        printf(
+            "[FAIL] %s | Expected: %d | Got: %d\n",
+            test_name,
+            expected,
+            actual
+        );
     }
 }
 
@@ -44,36 +33,49 @@ int main(void) {
 
     printf("Binary Search Tests:\n");
 
-    test_both_searches("First element", issues, count, 101, 0);
-    test_both_searches("Middle element", issues, count, 104, 3);
-    test_both_searches("Last element", issues, count, 107, 6);
-    test_both_searches("Missing element", issues, count, 999, -1);
-
-    Issue single_issue[] = {
-        {200, "Only issue", 5, 2, "Backend", -1}
-    };
-
-    test_both_searches(
-        "Single element found",
-        single_issue,
-        1,
-        200,
+    check_result(
+        "First element",
+        binary_search_iterative(issues, count, 101),
         0
     );
 
-    test_both_searches(
-        "Single element missing",
-        single_issue,
-        1,
-        201,
+    check_result(
+        "Middle element",
+        binary_search_iterative(issues, count, 104),
+        3
+    );
+
+    check_result(
+        "Last element",
+        binary_search_iterative(issues, count, 107),
+        6
+    );
+
+    check_result(
+        "Missing element",
+        binary_search_iterative(issues, count, 999),
         -1
     );
 
-    test_both_searches(
+    Issue single[] = {
+        {200, "Only issue", 5, 2, "Backend", -1}
+    };
+
+    check_result(
+        "Single element found",
+        binary_search_iterative(single, 1, 200),
+        0
+    );
+
+    check_result(
+        "Single element missing",
+        binary_search_iterative(single, 1, 201),
+        -1
+    );
+
+    check_result(
         "Empty array",
-        NULL,
-        0,
-        101,
+        binary_search_iterative(NULL, 0, 101),
         -1
     );
 
