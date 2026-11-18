@@ -5,6 +5,7 @@
 #include "../include/search.h"
 #include "../include/assignment.h"
 #include "../include/dependency.h"
+#include "../include/matching.h"
 
 int main(void) {
     Issue issues[MAX_ISSUES];
@@ -134,47 +135,43 @@ int main(void) {
         }
 
         else if (choice == 6) {
-            Issue prioritized_issues[MAX_ISSUES];
-            Developer available_developers[MAX_DEVELOPERS];
-            Assignment assignments[MAX_ISSUES];
+        Issue prioritized_issues[MAX_ISSUES];
+        Assignment assignments[MAX_ISSUES];
 
-            for (int i = 0; i < issue_count; i++) {
-                prioritized_issues[i] = issues[i];
-            }
+        for (int i = 0; i < issue_count; i++) {
+            prioritized_issues[i] = issues[i];
+        }
 
-            for (int i = 0; i < developer_count; i++) {
-                available_developers[i] = developers[i];
-            }
+        merge_sort_issues(
+            prioritized_issues,
+            issue_count
+        );
 
-            merge_sort_issues(
-                prioritized_issues,
-                issue_count
-            );
+        int assignment_count = maximum_bipartite_matching(
+            prioritized_issues,
+            issue_count,
+            developers,
+            developer_count,
+            assignments
+        );
 
-            int assignment_count = assign_issues(
-                prioritized_issues,
-                issue_count,
-                available_developers,
-                developer_count,
-                assignments
-            );
+        printf("\nDeveloper Assignments:\n");
+        printf("Method: Maximum Bipartite Matching\n\n");
 
-            printf("\nDeveloper Assignments:\n");
-
-            for (int i = 0; i < assignment_count; i++) {
-                printf(
-                    "Issue %d -> Developer %d\n",
-                    assignments[i].issue_id,
-                    assignments[i].developer_id
-                );
-            }
-
+        for (int i = 0; i < assignment_count; i++) {
             printf(
-                "\nTotal assigned: %d/%d\n",
-                assignment_count,
-                issue_count
+                "Issue %d -> Developer %d\n",
+                assignments[i].issue_id,
+                assignments[i].developer_id
             );
         }
+
+        printf(
+            "\nMatched: %d/%d issues in this assignment round.\n",
+            assignment_count,
+            issue_count
+        );
+    }
 
         else if (choice == 7) {
             int issue_id;

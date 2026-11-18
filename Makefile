@@ -9,8 +9,9 @@ SOURCES = src/main.c \
           src/sorting.c \
           src/search.c \
           src/assignment.c \
-          src/dependency.c
-
+          src/dependency.c \
+          src/matching.c
+        
 $(TARGET): $(SOURCES)
 	$(CC) $(CFLAGS) $(SOURCES) -o $(TARGET)
 
