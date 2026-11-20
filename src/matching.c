@@ -1,6 +1,7 @@
 #include <stddef.h>
 #include <string.h>
 #include "../include/matching.h"
+#include "../include/io.h"
 
 static int is_compatible(
     const Issue *issue,
@@ -114,4 +115,104 @@ int maximum_bipartite_matching(
     }
 
     return match_count;
+}
+int capacity_aware_matching(
+    const Issue issues[],
+    int issue_count,
+    const Developer developers[],
+    int developer_count,
+    Assignment assignments[]
+) {
+    if (issues == NULL || developers == NULL ||
+        assignments == NULL ||
+        issue_count <= 0 || developer_count <= 0) {
+        return 0;
+    }
+
+    Developer remaining_developers[MAX_DEVELOPERS];
+    int assigned[MAX_ISSUES];
+
+    for (int d = 0; d < developer_count; d++) {
+        remaining_developers[d] = developers[d];
+    }
+
+    for (int i = 0; i < issue_count; i++) {
+        assigned[i] = 0;
+    }
+
+    int total_assignments = 0;
+
+    while (1) {
+        Issue remaining_issues[MAX_ISSUES];
+        int original_index[MAX_ISSUES];
+        int remaining_count = 0;
+
+        for (int i = 0; i < issue_count; i++) {
+            if (!assigned[i]) {
+                remaining_issues[remaining_count] = issues[i];
+                original_index[remaining_count] = i;
+                remaining_count++;
+            }
+        }
+
+        if (remaining_count == 0) {
+            break;
+        }
+
+        Assignment round_assignments[MAX_ISSUES];
+
+        int round_count = maximum_bipartite_matching(
+            remaining_issues,
+            remaining_count,
+            remaining_developers,
+            developer_count,
+            round_assignments
+        );
+
+        if (round_count == 0) {
+            break;
+        }
+
+        for (int a = 0; a < round_count; a++) {
+            int issue_id = round_assignments[a].issue_id;
+            int developer_id = round_assignments[a].developer_id;
+
+            int remaining_issue_index = -1;
+            int developer_index = -1;
+
+            for (int i = 0; i < remaining_count; i++) {
+                if (remaining_issues[i].id == issue_id) {
+                    remaining_issue_index = i;
+                    break;
+                }
+            }
+
+            for (int d = 0; d < developer_count; d++) {
+                if (remaining_developers[d].id == developer_id) {
+                    developer_index = d;
+                    break;
+                }
+            }
+
+            if (remaining_issue_index == -1 ||
+                developer_index == -1) {
+                continue;
+            }
+
+            int source_index =
+                original_index[remaining_issue_index];
+
+            assignments[total_assignments] =
+                round_assignments[a];
+
+            total_assignments++;
+
+            remaining_developers[developer_index].available_hours -=
+                issues[source_index].estimated_hours;
+
+            assigned[source_index] = 1;
+        }
+    }
+
+    return total_assignments;
 }

@@ -2,198 +2,181 @@
 
 ## Purpose
 
-Project 50 requires implementations from multiple DAA paradigms.
+This document explains why each algorithm used in the final Issue Triage and Developer Assignment Tool was selected.
 
-Algorithms that naturally solve a problem in the Issue Triage and Developer
-Assignment Tool will be integrated into the product.
+The project follows a need-based approach: an algorithm is included only when it solves a genuine product requirement.
 
-Mandatory algorithms that do not naturally fit the product will be implemented
-and demonstrated through the DAA Algorithm Workbench within the same project.
+---
 
-This keeps the product meaningful while ensuring complete syllabus coverage.
+## 1. Merge Sort
 
+**Product Use:** Issue Prioritization
 
-## Classification
+Issues need to be ordered so that high-priority work is considered first.
 
-Each algorithm is classified as:
+Merge Sort orders issues using:
 
-- **Product** - directly used by the Issue Triage application.
-- **Supporting** - has a reasonable project-related demonstration but is not
-  essential to the main workflow.
-- **Workbench** - implemented primarily to demonstrate the mandatory DAA concept.
+1. Priority in descending order
+2. Issue ID in ascending order when priorities are equal
 
+### Why Merge Sort?
 
-# 1. Sorting and Searching
+Merge Sort provides predictable `O(n log n)` time complexity and works well for sorting structured issue records.
 
-| Algorithm | Classification | Planned Use |
-|---|---|---|
-| Merge Sort | Product | Sort/prioritize issue records |
-| Quick Sort | Product | Alternative issue-sorting strategy |
-| Iterative Binary Search | Product | Search ordered issue records by ID |
-| Recursive Binary Search | Product | Alternative binary-search implementation |
+The sorting operation is performed on a copy of the issue array so that the original Issue-ID ordering remains available for Binary Search.
 
-Merge Sort and Quick Sort will operate using the same ordering rules so their
-correctness and performance can be compared.
+---
 
-The two Binary Search implementations will operate on appropriately sorted
-records.
+## 2. Iterative Binary Search
 
+**Product Use:** Search Issue by ID
 
-# 2. Divide and Conquer
+Issues are stored in ascending Issue-ID order in the original dataset.
 
-| Algorithm | Classification | Planned Use |
-|---|---|---|
-| Maximum Subarray | Workbench | Demonstrate divide-and-conquer optimization |
-| Fast Powering | Workbench | Demonstrate divide-and-conquer exponentiation |
-| Celebrity Problem | Workbench | Demonstrate recursive candidate elimination |
-| Classical Matrix Multiplication | Workbench | Baseline matrix multiplication |
-| Strassen Matrix Multiplication | Workbench | Compare with classical multiplication |
+Binary Search repeatedly eliminates half of the remaining search space, giving:
 
-Classical and Strassen matrix multiplication will use compatible inputs so
-their results and performance can be compared.
+```text
+Time Complexity: O(log n)
+Space Complexity: O(1)
+```
 
+### Why Iterative Binary Search?
 
-# 3. Greedy Methods
+Searching by Issue ID is a direct product requirement, and the iterative version provides efficient lookup without recursion overhead.
 
-| Algorithm | Classification | Planned Use |
-|---|---|---|
-| Activity Selection | Product | Select compatible work activities/tasks |
-| Interval Partitioning | Supporting | Allocate overlapping work intervals/resources |
-| Huffman Coding | Supporting | Demonstrate compression of repository-related text/data |
-| Dijkstra | Supporting | Shortest-path analysis on a weighted project/module graph |
-| Prim | Supporting | Minimum spanning tree demonstration |
-| Kruskal | Supporting | Alternative minimum spanning tree strategy |
+---
 
-Prim and Kruskal will operate on the same graph where appropriate so their
-results and implementation strategies can be compared.
+## 3. First-Suitable Assignment
 
+**Product Use:** Baseline Developer Assignment
 
-# 4. Dynamic Programming
+The baseline assignment processes issues one at a time.
 
-| Algorithm | Classification | Planned Use |
-|---|---|---|
-| 0/1 Knapsack | Product | Select valuable issues under limited developer capacity |
-| Matrix Chain Multiplication | Workbench | Demonstrate optimal parenthesization using DP |
-| Longest Common Subsequence | Supporting | Compare relevant text/event sequences |
-| Optimal BST | Supporting | Demonstrate optimized lookup structure for known access frequencies |
-| Bellman-Ford | Supporting | Shortest-path analysis with support for negative edge weights |
-| Floyd-Warshall | Supporting | All-pairs shortest-path analysis |
-| Bounded TSP | Workbench | Demonstrate exact optimization on small instances |
+An issue is assigned to the first developer who:
 
-The input size for exact TSP demonstrations will remain bounded so the program
-can run safely during evaluation.
+- has the required skill, and
+- has enough remaining hours.
 
+After assignment, the issue's estimated hours are deducted from that developer's available capacity.
 
-# 5. Backtracking
+### Why Keep a Baseline?
 
-| Algorithm | Classification | Planned Use |
-|---|---|---|
-| N-Queens | Workbench | Demonstrate constraint solving using backtracking |
-| Subset Problem | Workbench | Demonstrate include/exclude backtracking decisions |
+This provides a simple assignment strategy that is easy to understand and compare with the matching-based approach.
 
-These algorithms will not be artificially presented as core issue-triage
-features.
+Its limitation is that it makes local decisions and may miss a better overall assignment.
 
+---
 
-# 6. Branch and Bound
+## 4. Maximum Bipartite Matching
 
-| Algorithm | Classification | Planned Use |
-|---|---|---|
-| FIFO Branch and Bound | Workbench | Solve an exact bounded decision/optimization instance |
-| LIFO Branch and Bound | Workbench | Solve the same instance using LIFO node selection |
-| Least-Cost Branch and Bound | Workbench | Solve the same instance using least-cost node selection |
+**Product Use:** Primary Issue-to-Developer Matching
 
-All three strategies will solve the same problem instance so their search
-behaviour can be compared meaningfully.
+Issues form one side of a bipartite graph and developers form the other.
 
+An edge exists when:
 
-# 7. Flow and Matching
+```text
+Required skill matches
+        AND
+Developer has enough remaining capacity
+```
 
-| Algorithm | Classification | Planned Use |
-|---|---|---|
-| Ford-Fulkerson | Product | Model constrained capacity allocation |
-| Maximum Bipartite Matching | Product | Match software issues to suitable developers |
+Maximum Bipartite Matching uses augmenting paths to rearrange existing matches when doing so allows more compatible assignments.
 
-Maximum Bipartite Matching is the primary core algorithm of the project.
+Example:
 
-One side of the bipartite graph represents issues and the other represents
-developers. An edge indicates that a developer is eligible to handle an issue
-under the chosen compatibility rules.
+```text
+Initial:
 
+Issue A -> Developer 1
+Issue B -> Unassigned
 
-# 8. Number Theory
+If Issue A can also use Developer 2:
 
-| Algorithm | Classification | Planned Use |
-|---|---|---|
-| Chinese Remainder Theorem | Workbench | Demonstrate the mandatory number-theory algorithm |
+Issue A -> Developer 2
+Issue B -> Developer 1
+```
 
-CRT will be implemented as a small independent utility within the Algorithm
-Workbench.
+This increases the number of matched issues.
 
+### Capacity-Aware Extension
 
-# 9. String Matching
+Standard Maximum Bipartite Matching allows each developer vertex to receive only one issue in one matching round.
 
-| Algorithm | Classification | Planned Use |
-|---|---|---|
-| Naive Pattern Matching | Product | Search issue titles/descriptions |
-| Rabin-Karp | Product | Alternative issue-text search |
-| Finite Automaton Matching | Product | Alternative issue-text search |
-| KMP | Product | Alternative issue-text search |
+The product therefore uses repeated matching rounds:
 
-All four algorithms will be tested using the same text and patterns where
-appropriate so their correctness and performance can be compared.
+```text
+Priority-Sorted Issues
+        |
+        v
+Maximum Bipartite Matching
+        |
+        v
+Record Assignments
+        |
+        v
+Reduce Remaining Developer Hours
+        |
+        v
+Remove Assigned Issues
+        |
+        v
+Repeat
+```
 
+This allows a developer to receive multiple issues while ensuring that their total assigned effort does not exceed their available hours.
 
-# 10. Algorithm Foundations and Analysis
+The multi-round approach is a practical heuristic and does not guarantee a globally optimal allocation for every possible combination of differently sized issues.
 
-The project will also include:
+---
 
-- Recurrence analysis where applicable
-- Asymptotic time-complexity analysis
-- Space-complexity analysis
-- Correctness evidence
-- Empirical performance measurements
-- Complexity-class discussion
-- Reduction mapping
-- Comparison of alternative strategies
-- Recommendations about which algorithms are appropriate under different
-  conditions
+## 5. Dependency-Chain Traversal
 
+**Product Use:** Issue Dependency Analysis
 
-# Product Algorithm Summary
+Each issue may contain one direct dependency ID.
 
-The algorithms most directly connected to the actual Issue Triage product are:
+The dependency module follows these references to display dependency chains.
 
-- Merge Sort
-- Quick Sort
-- Iterative Binary Search
-- Recursive Binary Search
-- Activity Selection
-- 0/1 Knapsack
-- Ford-Fulkerson
-- Maximum Bipartite Matching
-- Naive Pattern Matching
-- Rabin-Karp
-- Finite Automaton Matching
-- KMP
+Example:
 
-Other algorithms may support project-related scenarios where the mapping is
-reasonable.
+```text
+Issue 109
+    |
+    v
+Issue 104
+    |
+    v
+Issue 103
+```
 
+Linear lookup is used to locate dependency IDs.
 
-# Workbench Principle
+The implementation also handles:
 
-An algorithm will not be given an artificial issue-triage use solely to make it
-appear integrated.
+- missing dependency IDs,
+- issues with no dependency, and
+- possible circular dependencies.
 
-If an algorithm does not naturally solve part of the repository-triage problem,
-it will remain a clearly labelled syllabus demonstration in the Algorithm
-Workbench.
+---
 
-Every mandatory algorithm will still be:
+# Final Product Mapping
 
-1. Implemented by the student
-2. Accessible from the project
-3. Tested
-4. Analysed for correctness and complexity
-5. Benchmarked or compared where meaningful
+| Product Requirement | Algorithm / Technique |
+|---|---|
+| Prioritize issues | Merge Sort |
+| Search issue by ID | Iterative Binary Search |
+| Simple assignment baseline | First-suitable assignment |
+| Primary developer assignment | Maximum Bipartite Matching |
+| Multiple assignments within capacity | Repeated matching rounds |
+| Dependency analysis | Dependency-chain traversal |
+
+---
+
+## Scope Decision
+
+Earlier project planning considered several additional DAA algorithms.
+
+After clarification of the project requirements, only algorithms that directly support the final product were retained in the implementation.
+
+Other DAA algorithms and paradigms remain relevant for theoretical understanding and viva preparation, but they are not artificially added to the software when they do not solve a genuine issue-triage or developer-assignment requirement.

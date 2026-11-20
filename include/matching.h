@@ -11,5 +11,11 @@ int maximum_bipartite_matching(
     int developer_count,
     Assignment assignments[]
 );
-
+int capacity_aware_matching(
+    const Issue issues[],
+    int issue_count,
+    const Developer developers[],
+    int developer_count,
+    Assignment assignments[]
+);
 #endif

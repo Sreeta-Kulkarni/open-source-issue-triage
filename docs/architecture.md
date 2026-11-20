@@ -2,192 +2,233 @@
 
 ## 1. Architecture Goal
 
-The project will use a simple modular C architecture so that individual
-algorithms can be implemented, tested, demonstrated, and modified
-independently.
+The project uses a modular C architecture so that data handling, algorithms, developer assignment, and dependency analysis remain separate and independently testable.
 
-The application will consist of three main functional areas:
+The overall flow is:
 
-1. Issue Triage and Developer Assignment features
-2. DAA Algorithm Workbench
-3. Algorithm Benchmarking and Analysis
-
-All three will be accessible through the same menu-driven C application.
-
-## 2. High-Level Architecture
-
-User
- |
- v
+```text
+CSV Data
+   |
+   v
+Loading & Validation
+   |
+   v
+Issue / Developer Arrays
+   |
+   v
 Menu-Driven CLI
- |
- +---------------------------+
- |                           |
- v                           v
-Issue Triage             DAA Algorithm
-Features                 Workbench
- |                           |
- +-------------+-------------+
-               |
-               v
-        Algorithm Library
-               |
-               v
-        Data / Test Inputs
-               |
-               v
-      Results and Benchmarks
+   |
+   +-------------------+-------------------+
+   |                   |                   |
+   v                   v                   v
+Prioritization       Search            Assignment
+Merge Sort        Binary Search       Matching
+                                       |
+                                       v
+                              Capacity-Aware
+                              Multi-Round MBM
 
+                    +
+                    |
+                    v
+             Dependency Analysis
+```
 
-## 3. Issue Triage Features
+## 2. Main Modules
 
-This section contains the actual product functionality.
+### Models
 
-The planned features include:
+Files:
 
-- Viewing issues
-- Viewing developers
-- Prioritizing issues
-- Searching issues
-- Planning work or releases
-- Assigning issues to developers
-- Representing issue dependencies
+```text
+include/models.h
+src/models.c
+```
 
-Algorithms will be integrated into these features only when they provide a
-meaningful solution to the problem.
+Defines the `Issue` and `Developer` structures and provides validation and display functions.
 
-For example:
+### Input / Output
 
-- Merge Sort and Quick Sort can prioritize issues.
-- Binary Search can retrieve issues from ordered records.
-- Activity Selection can support scheduling decisions.
-- 0/1 Knapsack can select work under limited capacity.
-- Maximum Bipartite Matching can match issues with suitable developers.
-- String-matching algorithms can search issue text.
+Files:
 
-## 4. DAA Algorithm Workbench
+```text
+include/io.h
+src/io.c
+```
 
-Some mandatory syllabus algorithms do not naturally represent an
-issue-triage operation.
+Loads issue and developer records from CSV files and converts them into C structures.
 
-These algorithms will still be implemented within the same project and made
-available through an Algorithm Workbench.
+### Sorting
 
-The workbench will group algorithms according to their DAA paradigm, such as:
+Files:
 
-- Divide and Conquer
-- Greedy Methods
-- Dynamic Programming
-- Graph Algorithms
-- Backtracking
-- Branch and Bound
-- Flow and Matching
-- String Matching
-- Number Theory
+```text
+include/sorting.h
+src/sorting.c
+```
 
-This avoids forcing algorithms into inappropriate product features while
-still allowing every mandatory implementation to be demonstrated and tested.
+Contains the Merge Sort implementation used to prioritize issues.
 
-## 5. Benchmarking and Analysis
+Issues are ordered by:
 
-The project will contain a benchmarking section for comparing appropriate
-algorithmic alternatives.
+1. priority descending,
+2. Issue ID ascending when priorities are equal.
 
-Depending on the algorithm, comparisons may consider:
+### Searching
 
-- Execution time
-- Input size
-- Operation count
-- Memory requirements
-- Solution quality
-- Scalability
+Files:
 
-Correctness will be checked before performance results are compared.
+```text
+include/search.h
+src/search.c
+```
 
-Datasets will include small, medium, large, and relevant adversarial cases.
+Contains Iterative Binary Search for retrieving an issue using its ID.
 
-## 6. Data Flow
+### Developer Assignment
 
-A typical product operation will follow this flow:
+Files:
 
-Input Data
+```text
+include/assignment.h
+src/assignment.c
+include/matching.h
+src/matching.c
+```
+
+`assignment.c` contains the simple first-suitable baseline assignment strategy.
+
+`matching.c` contains Maximum Bipartite Matching using augmenting paths.
+
+The final product uses a capacity-aware multi-round extension:
+
+```text
+Priority-Sorted Issues
+        |
+        v
+Maximum Bipartite Matching
+        |
+        v
+Record Assignments
+        |
+        v
+Reduce Developer Capacity
+        |
+        v
+Remove Assigned Issues
+        |
+        v
+Repeat Until No More Matches
+```
+
+This allows developers to receive multiple compatible issues without exceeding their available hours.
+
+### Dependency Analysis
+
+Files:
+
+```text
+include/dependency.h
+src/dependency.c
+```
+
+Handles direct dependency lookup, dependency-chain traversal, invalid references, and protection against possible circular dependencies.
+
+### Main Application
+
+File:
+
+```text
+src/main.c
+```
+
+Loads the datasets and provides the menu-driven interface.
+
+The final menu is:
+
+```text
+1. View Issues
+2. View Developers
+3. Prioritize Issues
+4. Search Issues
+5. Developer Assignment
+6. Dependency Analysis
+0. Exit
+```
+
+## 3. Data Flow
+
+A typical operation follows:
+
+```text
+CSV File
+   |
+   v
+io.c
    |
    v
 Validation
    |
    v
-Issue / Developer Records
+Issue / Developer Structures
    |
    v
-Selected Algorithm
+Selected Product Operation
    |
    v
-Result
+Algorithm / Processing Module
    |
    v
-CLI Display / Benchmark Output
+CLI Output
+```
 
-The assessed version will use simple local data files rather than a database
-or live GitHub integration.
+The original loaded issue array is kept in Issue-ID order.
 
-## 7. Planned Repository Structure
+When an operation needs to reorder issues, such as prioritization or assignment, a copy is created first. This prevents Merge Sort from destroying the ordering required by Binary Search.
 
-open-source-issue-triage/
-|
-|-- include/
-|   |-- models.h
-|   |-- io.h
-|   `-- algorithm header files
-|
-|-- src/
-|   |-- main.c
-|   |-- models.c
-|   |-- io.c
-|   |-- assignment.c
-|   |-- dependency.c
-|   `-- algorithms/
-|
-|-- data/
-|-- tests/
-|-- benchmarks/
-|-- results/
-|-- docs/
-|
-|-- Makefile
-|-- README.md
-`-- .gitignore
+## 4. Testing
 
-Folders and files will be created only when they are required during
-development.
+Algorithm and feature tests are kept separately in:
 
-## 8. Interface
+```text
+tests/
+```
 
-The assessed application will use a menu-driven command-line interface.
+The test suite covers:
 
-A possible high-level menu is:
+- Merge Sort
+- Binary Search
+- baseline developer assignment
+- Maximum Bipartite Matching
+- capacity-aware matching
+- dependency analysis
+- normal, capacity-shock, and stress scenarios
 
-1. Issue Triage
-2. Search Issues
-3. Release Planning
-4. Developer Assignment
-5. Dependency Analysis
-6. DAA Algorithm Workbench
-7. Benchmarks and Comparisons
-0. Exit
+The Makefile provides build, clean, and test targets.
 
-The exact menu may change as the implementation develops.
+## 5. Data
 
-A graphical interface may be explored after Phase I, but it is not required
-for the core C implementation.
+The assessed version uses local CSV files.
 
-## 9. Design Principles
+```text
+data/
+|-- issues_small.csv
+|-- developers_small.csv
+|-- scenario_shock_developers.csv
+|-- stress_issues.csv
+`-- stress_developers.csv
+```
 
-The project will follow these principles:
+No database or internet connection is required.
 
-- Keep the implementation simple and modular.
-- Implement assessed algorithms manually.
-- Separate algorithm logic from menu/input logic.
-- Avoid unnecessary features before internal evaluation.
-- Keep algorithms independently testable.
-- Use meaningful domain mappings instead of forcing every algorithm into the product.
-- Maintain one coherent C project and executable.
+## 6. Design Principles
+
+The project follows a few simple principles:
+
+- Keep each module responsible for one main task.
+- Keep algorithm logic separate from menu logic.
+- Implement core algorithms manually.
+- Preserve original data when an operation needs a modified copy.
+- Keep components independently testable.
+- Use algorithms only where they solve a genuine product requirement.
+- Prefer a small implementation that can be understood and modified during evaluation.

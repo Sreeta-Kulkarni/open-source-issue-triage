@@ -138,6 +138,57 @@ int main(void) {
         empty_count,
         0
     );
+    
+    
+    Issue multi_issues[] = {
+        {401, "Backend task A", 10, 4, "Backend", -1},
+        {402, "Backend task B", 9, 3, "Backend", -1}
+    };
 
+    Developer multi_developers[] = {
+        {1, "Aman", "Backend", 8}
+    };
+
+    Assignment multi_assignments[2];
+
+    int multi_count = capacity_aware_matching(
+        multi_issues,
+        2,
+        multi_developers,
+        1,
+        multi_assignments
+    );
+
+    check_count(
+        "Multiple issues within developer capacity",
+        multi_count,
+        2
+    );
+
+    Issue capacity_issues[] = {
+        {501, "Backend task A", 10, 4, "Backend", -1},
+        {502, "Backend task B", 9, 3, "Backend", -1},
+        {503, "Backend task C", 8, 2, "Backend", -1}
+    };
+
+    Developer capacity_developers[] = {
+        {1, "Aman", "Backend", 8}
+    };
+
+    Assignment capacity_assignments[3];
+
+    int capacity_aware_count = capacity_aware_matching(
+        capacity_issues,
+        3,
+        capacity_developers,
+        1,
+        capacity_assignments
+    );
+
+    check_count(
+        "Developer capacity is not exceeded",
+        capacity_aware_count,
+        2
+    );
     return 0;
 }
