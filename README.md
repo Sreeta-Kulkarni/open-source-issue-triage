@@ -1,149 +1,91 @@
-# Project 50 - Open Source Issue Triage and Developer Assignment Tool
+# Open Source Issue Triage & Developer Assignment Tool
 
-## Overview
+A C-based issue triage system developed for the Design and Analysis of Algorithms (DAA) PBL.
 
-This project is developed as part of the Design and Analysis of Algorithms (DAA) Project-Based Learning assessment.
+The tool loads software issues and developer data from CSV files, prioritizes issues, searches issue records, assigns work to suitable developers, and analyses issue dependencies.
 
-It is a C-based, menu-driven tool for managing software issues. The system loads issue and developer data from CSV files, prioritizes issues, searches issue records, assigns issues to compatible developers, and analyses issue dependencies.
+## Features
 
-The project follows a need-based approach: algorithms are implemented where they solve a genuine product requirement rather than adding unrelated algorithms only for demonstration.
-
-## Implementation
-
-- Language: C
-- Standard: C11
-- Compiler: GCC
-- Interface: Menu-driven CLI
-- Build System: Makefile
-- Operation: Fully offline
-
-## Core Features
-
-### 1. Issue and Developer Management
-
-The system loads issue and developer records from CSV files and validates the input before using it.
-
-Each issue contains:
-
-- Issue ID
-- Title
-- Priority
-- Estimated effort
-- Required skill
-- Dependency ID
-
-Each developer contains:
-
-- Developer ID
-- Name
-- Skill
-- Available hours
-
-### 2. Issue Prioritization
-
-Issues are prioritized using a student-written Merge Sort implementation.
-
-Ordering rule:
-
-1. Higher priority first
-2. If priorities are equal, lower Issue ID first
-
-The original issue array is preserved so that prioritization does not interfere with other operations.
-
-### 3. Issue Search
-
-Issue records are retrieved using Iterative Binary Search.
-
-Binary Search operates on the original issue array, which is maintained in ascending Issue-ID order.
-
-### 4. Developer Assignment
-
-The primary developer-assignment strategy uses a capacity-aware multi-round approach built around Maximum Bipartite Matching.
-
-An Issue-Developer compatibility edge exists when:
-
-- the developer's skill matches the issue's required skill, and
-- the developer has sufficient remaining available hours for that issue.
-
-Within each round, Maximum Bipartite Matching uses augmenting paths to maximize compatible one-to-one matches.
-
-After each round:
-
-1. successful assignments are recorded,
-2. assigned issues are removed from further consideration,
-3. the estimated effort of each assigned issue is subtracted from the matched developer's remaining capacity, and
-4. Maximum Bipartite Matching is repeated on the remaining issues and updated developer capacities.
-
-This allows a developer to receive multiple issues across matching rounds while ensuring that assigned effort does not exceed the developer's available hours.
-
-A simple first-suitable capacity-aware assignment strategy is retained as a baseline for comparison and analysis.
-
-### 5. Dependency Analysis
-
-The system represents direct issue dependencies using dependency IDs.
-
-It can:
-
-- validate dependency references,
-- follow dependency chains,
-- detect invalid dependency IDs, and
-- safely identify possible circular dependencies.
+- Load and view issues and developers
+- Prioritize issues based on priority
+- Search issues by ID
+- Assign issues based on skill and available developer hours
+- Analyse issue dependency chains
+- Handle multiple assignments without exceeding developer capacity
+- Test normal, capacity-shock, and larger stress scenarios
 
 ## Algorithms Used
 
-| Product Requirement | Algorithm / Technique |
+| Feature | Algorithm |
 |---|---|
-| Issue prioritization | Merge Sort |
-| Issue retrieval | Iterative Binary Search |
-| Baseline developer assignment | First-suitable capacity-aware assignment |
-| Primary developer assignment | Maximum Bipartite Matching using augmenting paths |
-| Dependency lookup and traversal | Linear lookup and dependency-chain traversal |
+| Issue Prioritization | Merge Sort |
+| Issue Search | Iterative Binary Search |
+| Developer Assignment | Maximum Bipartite Matching |
+| Capacity Handling | Repeated matching rounds |
+| Dependency Analysis | Dependency-chain traversal |
 
-All central assessed algorithms are implemented manually in C rather than replaced with library implementations.
+Developer assignment is the main algorithmic component. Issues and developers form a bipartite graph, where an edge exists when the developer has the required skill and sufficient remaining hours.
+
+Maximum Bipartite Matching uses augmenting paths to improve assignments. Matching is repeated after updating developer capacities so that one developer can handle multiple issues without exceeding their available hours.
 
 ## Project Structure
 
 ```text
-open-source-issue-triage/
-|
-|-- data/
-|   |-- issues_small.csv
-|   |-- developers_small.csv
-|   |-- scenario_shock_developers.csv
-|   |-- stress_issues.csv
-|   `-- stress_developers.csv
-|
-|-- docs/
-|   |-- architecture.md
-|   |-- algorithm_mapping.md
-|   `-- problem_statement.md
-|
-|-- include/
-|   |-- models.h
-|   |-- io.h
-|   |-- sorting.h
-|   |-- search.h
-|   |-- assignment.h
-|   |-- matching.h
-|   `-- dependency.h
-|
-|-- src/
-|   |-- main.c
-|   |-- models.c
-|   |-- io.c
-|   |-- sorting.c
-|   |-- search.c
-|   |-- assignment.c
-|   |-- matching.c
-|   `-- dependency.c
-|
-|-- tests/
-|   |-- test_sorting.c
-|   |-- test_search.c
-|   |-- test_assignment.c
-|   |-- test_matching.c
-|   |-- test_dependency.c
-|   `-- test_scenarios.c
-|
-|-- Makefile
-`-- README.md
+data/       CSV datasets and scenarios
+include/    Header files
+src/        C implementations
+tests/      Algorithm and scenario tests
+docs/       Project documentation
+Makefile    Build and test configuration
+```
+
+## Build and Run
+
+Compile:
+
+```bash
+make
+```
+
+Run in PowerShell:
+
+```powershell
+.\triage.exe
+```
+
+Run tests:
+
+```bash
+make test
+```
+
+Clean generated files:
+
+```bash
+make clean
+```
+
+## Demonstration Scenarios
+
+The project includes three evaluation scenarios:
+
+- **Normal:** 15 issues and 6 developers
+- **Capacity Shock:** reduced developer availability
+- **Stress:** 75 issues and 25 developers
+
+## Current Limitations
+
+The assessment version uses one primary skill per developer, one required skill per issue, and one direct dependency per issue.
+
+The capacity-aware assignment method respects developer hours but is still a heuristic built around repeated Maximum Bipartite Matching rounds; it does not guarantee a globally optimal allocation for every possible workload.
+
+## Future Scope
+
+Possible extensions include multiple developer skills, weighted/capacitated assignment, richer dependency graphs, deadlines and scheduling, database persistence, GitHub/GitLab integration, and a graphical or web interface.
+
+## Tech Stack
+
+- C11
+- GCC
+- GNU Make
+- CSV-based offline data
